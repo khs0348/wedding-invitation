@@ -375,6 +375,7 @@ section {
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 2px;
+  cursor: pointer;
 }
 
 .gallery-item img {
@@ -382,7 +383,81 @@ section {
   height: 100%;
   object-fit: cover;
   display: block;
-  pointer-events: none;
+}
+
+/* ===== IMAGE VIEWER ===== */
+.viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  touch-action: none;
+}
+
+.viewer-overlay.active {
+  display: flex;
+}
+
+.viewer-overlay img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.viewer-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 210;
+}
+
+.viewer-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 80px;
+  background: rgba(0,0,0,0.4);
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  border-radius: 8px;
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-nav.prev { left: 10px; }
+.viewer-nav.next { right: 10px; }
+
+.viewer-counter {
+  color: rgba(255,255,255,0.8);
+  font-size: 14px;
+  margin-top: 16px;
+  letter-spacing: 2px;
 }
 
 
@@ -614,7 +689,7 @@ section {
 }
 
 .account-list.open {
-  max-height: 300px;
+  max-height: 350px;
 }
 
 .account-card {
@@ -1121,23 +1196,23 @@ section {
       <div class="section-title-kr">우리의 순간</div>
       <div class="divider"></div>
       <div class="gallery" id="gallery">
-        <div class="gallery-item"><img src="images/ONG_0252.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_0340-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_0485-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_0541-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_0892-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_0922-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_0953-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_1006-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_1034-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_1126 -기본-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_1458-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_1542-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_2143-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_2265-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_2401-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_2442-.jpg" alt=""></div>
-        <div class="gallery-item"><img src="images/ONG_2461-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(0)"><img src="images/ONG_0252.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(1)"><img src="images/ONG_0340-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(2)"><img src="images/ONG_0485-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(3)"><img src="images/ONG_0541-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(4)"><img src="images/ONG_0892-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(5)"><img src="images/ONG_0922-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(6)"><img src="images/ONG_0953-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(7)"><img src="images/ONG_1006-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(8)"><img src="images/ONG_1034-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(9)"><img src="images/ONG_1126 -기본-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(10)"><img src="images/ONG_1458-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(11)"><img src="images/ONG_1542-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(12)"><img src="images/ONG_2143-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(13)"><img src="images/ONG_2265-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(14)"><img src="images/ONG_2401-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(15)"><img src="images/ONG_2442-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(16)"><img src="images/ONG_2461-.jpg" alt=""></div>
       </div>
       <button class="gallery-more-btn" id="galleryMoreBtn" onclick="showMorePhotos()">더보기</button>
     </div>
@@ -1354,10 +1429,87 @@ section {
   </button>
 </nav>
 
+<!-- IMAGE VIEWER -->
+<div class="viewer-overlay" id="viewer">
+  <button class="viewer-close" onclick="closeViewer()">&#10005;</button>
+  <button class="viewer-nav prev" onclick="navViewer(-1)">&#10094;</button>
+  <button class="viewer-nav next" onclick="navViewer(1)">&#10095;</button>
+  <img id="viewerImg" src="" alt="">
+  <div class="viewer-counter" id="viewerCounter"></div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
+// Gallery viewer (no zoom)
+const allImages = [
+  'images/ONG_0252.jpg',
+  'images/ONG_0340-.jpg',
+  'images/ONG_0485-.jpg',
+  'images/ONG_0541-.jpg',
+  'images/ONG_0892-.jpg',
+  'images/ONG_0922-.jpg',
+  'images/ONG_0953-.jpg',
+  'images/ONG_1006-.jpg',
+  'images/ONG_1034-.jpg',
+  'images/ONG_1126 -기본-.jpg',
+  'images/ONG_1458-.jpg',
+  'images/ONG_1542-.jpg',
+  'images/ONG_2143-.jpg',
+  'images/ONG_2265-.jpg',
+  'images/ONG_2401-.jpg',
+  'images/ONG_2442-.jpg',
+  'images/ONG_2461-.jpg'
+];
+let currentImg = 0;
+
+function openViewer(idx) {
+  currentImg = idx;
+  document.getElementById('viewerImg').src = allImages[idx];
+  document.getElementById('viewerCounter').textContent = (idx + 1) + ' / ' + allImages.length;
+  document.getElementById('viewer').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeViewer() {
+  document.getElementById('viewer').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function navViewer(dir) {
+  currentImg = (currentImg + dir + allImages.length) % allImages.length;
+  document.getElementById('viewerImg').src = allImages[currentImg];
+  document.getElementById('viewerCounter').textContent = (currentImg + 1) + ' / ' + allImages.length;
+}
+
+document.getElementById('viewer').addEventListener('click', function(e) {
+  if (e.target === this) closeViewer();
+});
+
+// Block pinch zoom in viewer
+document.getElementById('viewer').addEventListener('touchmove', function(e) {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+// Swipe support
+(function() {
+  const viewer = document.getElementById('viewer');
+  let startX = 0;
+  viewer.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  viewer.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 50) navViewer(diff > 0 ? -1 : 1);
+  });
+})();
+
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('viewer').classList.contains('active')) return;
+  if (e.key === 'ArrowLeft') navViewer(-1);
+  else if (e.key === 'ArrowRight') navViewer(1);
+  else if (e.key === 'Escape') closeViewer();
+});
+
 // Gallery more button
 function showMorePhotos() {
   document.getElementById('gallery').classList.add('show-all');
