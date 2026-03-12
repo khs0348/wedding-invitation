@@ -1614,10 +1614,7 @@ function updateCountdown() {
   const now = new Date();
   const diff = wedding - now;
   if (diff <= 0) {
-    document.getElementById('ddayDays').textContent = '0';
-    document.getElementById('ddayHours').textContent = '0';
-    document.getElementById('ddayMins').textContent = '0';
-    document.getElementById('ddaySecs').textContent = '0';
+    document.getElementById('ddayCounter').innerHTML = '<div style="font-family:\'Nanum Myeongjo\',serif;font-size:36px;font-weight:700;color:#c9b99a;letter-spacing:4px;">D-Day</div>';
     return;
   }
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
