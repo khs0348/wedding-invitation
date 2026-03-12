@@ -89,7 +89,7 @@ body {
 
 .cover-names .name {
   font-family: 'Nanum Myeongjo', serif;
-  font-size: 32px;
+  font-size: 31px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 6px;
@@ -98,13 +98,13 @@ body {
 
 .cover-names .separator {
   font-family: 'Nanum Myeongjo', serif;
-  font-size: 20px;
+  font-size: 28px;
   color: rgba(255,255,255,0.7);
 }
 
 .cover .date-text {
   font-family: 'Nanum Myeongjo', serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: 2px;
   color: rgba(255,255,255,0.9);
@@ -113,50 +113,11 @@ body {
 
 .cover .venue-text {
   font-family: 'Nanum Myeongjo', serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   color: rgba(255,255,255,0.8);
 }
 
-.cover .scroll-indicator {
-  position: absolute;
-  bottom: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  animation: bounce 2s infinite;
-}
-
-.cover .scroll-indicator span {
-  font-size: 11px;
-  letter-spacing: 3px;
-  color: rgba(255,255,255,0.6);
-}
-
-.cover .scroll-indicator .arrow {
-  width: 1px;
-  height: 30px;
-  background: rgba(255,255,255,0.6);
-  position: relative;
-}
-
-.cover .scroll-indicator .arrow::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: -4px;
-  width: 9px;
-  height: 9px;
-  border-right: 1px solid rgba(255,255,255,0.6);
-  border-bottom: 1px solid rgba(255,255,255,0.6);
-  transform: rotate(45deg);
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(8px); }
-}
 
 /* ===== SECTIONS ===== */
 section {
@@ -371,34 +332,49 @@ section {
   padding: 0 30px;
 }
 
-.main-photo {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-.main-photo img {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
-
 .gallery {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 3px;
   padding: 0 20px;
   margin-top: 20px;
+}
+
+.gallery-item:nth-child(n+10) {
+  display: none;
+}
+
+.gallery.show-all .gallery-item:nth-child(n+10) {
+  display: block;
+}
+
+.gallery-more-btn {
+  display: block;
+  margin: 20px auto 0;
+  padding: 12px 40px;
+  border: 1px solid #d4c5a9;
+  background: transparent;
+  color: #b8a88a;
+  font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gallery-more-btn:active {
+  background: #c9b99a;
+  color: #fff;
+}
+
+.gallery-more-btn.hidden {
+  display: none;
 }
 
 .gallery-item {
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 2px;
-  cursor: pointer;
-  transition: opacity 0.2s;
 }
 
 .gallery-item img {
@@ -406,87 +382,9 @@ section {
   height: 100%;
   object-fit: cover;
   display: block;
+  pointer-events: none;
 }
 
-.gallery-item:active {
-  opacity: 0.7;
-}
-
-/* ===== IMAGE VIEWER ===== */
-.viewer-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.95);
-  z-index: 200;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.viewer-overlay.active {
-  display: flex;
-}
-
-.viewer-overlay img {
-  max-width: 100%;
-  max-height: 80vh;
-  object-fit: contain;
-}
-
-.viewer-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 44px;
-  height: 44px;
-  background: rgba(0,0,0,0.5);
-  border: none;
-  border-radius: 50%;
-  color: #fff;
-  font-size: 22px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 210;
-}
-
-.viewer-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 80px;
-  background: rgba(0,0,0,0.4);
-  border: none;
-  color: #fff;
-  font-size: 28px;
-  cursor: pointer;
-  border-radius: 8px;
-  z-index: 210;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.viewer-nav:hover {
-  background: rgba(0,0,0,0.6);
-}
-
-.viewer-nav.prev { left: 10px; }
-.viewer-nav.next { right: 10px; }
-
-.viewer-counter {
-  color: rgba(255,255,255,0.8);
-  font-size: 14px;
-  margin-top: 16px;
-  letter-spacing: 2px;
-}
 
 /* ===== LOCATION ===== */
 .location-section {
@@ -1082,16 +980,12 @@ section {
     </div>
     <div class="cover-content">
       <div class="cover-names">
-        <span class="name">준희</span>
-        <span class="separator">|</span>
-        <span class="name">송민</span>
+        <span class="name">강준희</span>
+        <span class="separator">&</span>
+        <span class="name">이송민</span>
       </div>
       <div class="date-text">2026.05.03 일요일 오후 12:00</div>
       <div class="venue-text">MJ컨벤션 5층 그랜드볼룸홀</div>
-    </div>
-    <div class="scroll-indicator">
-      <span>SCROLL</span>
-      <div class="arrow"></div>
     </div>
   </div>
 
@@ -1226,27 +1120,26 @@ section {
       <div class="section-title">Gallery</div>
       <div class="section-title-kr">우리의 순간</div>
       <div class="divider"></div>
-      <div class="main-photo" onclick="openViewerAll(0)" style="cursor:pointer">
-        <img src="images/ONG_1126 -기본-.jpg" alt="준희 & 송민">
+      <div class="gallery" id="gallery">
+        <div class="gallery-item"><img src="images/ONG_0252.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_0340-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_0485-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_0541-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_0892-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_0922-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_0953-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_1006-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_1034-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_1126 -기본-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_1458-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_1542-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_2143-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_2265-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_2401-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_2442-.jpg" alt=""></div>
+        <div class="gallery-item"><img src="images/ONG_2461-.jpg" alt=""></div>
       </div>
-      <div class="gallery">
-        <div class="gallery-item" onclick="openViewerAll(1)"><img src="images/ONG_0340-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(2)"><img src="images/ONG_0485-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(3)"><img src="images/ONG_0541-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(4)"><img src="images/ONG_0892-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(5)"><img src="images/ONG_0922-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(6)"><img src="images/ONG_0953-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(7)"><img src="images/ONG_1006-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(8)"><img src="images/ONG_1034-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(9)"><img src="images/ONG_1126 -기본-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(10)"><img src="images/ONG_1458-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(11)"><img src="images/ONG_1542-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(12)"><img src="images/ONG_2143-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(13)"><img src="images/ONG_2265-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(14)"><img src="images/ONG_2401-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(15)"><img src="images/ONG_2442-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewerAll(16)"><img src="images/ONG_2461-.jpg" alt=""></div>
-      </div>
+      <button class="gallery-more-btn" id="galleryMoreBtn" onclick="showMorePhotos()">더보기</button>
     </div>
   </section>
 
@@ -1346,10 +1239,18 @@ section {
           <div class="account-card">
             <div class="info">
               <div class="bank">KB국민은행</div>
-              <div class="number">강도형 (계좌문의)</div>
+              <div class="number">392001-04-235089</div>
               <div class="name">아버지 강도형</div>
             </div>
-            <button class="copy-btn" onclick="showToast('계좌번호를 확인해주세요')">복사</button>
+            <button class="copy-btn" onclick="copyAccount('39200104235089')">복사</button>
+          </div>
+          <div class="account-card">
+            <div class="info">
+              <div class="bank">KB국민은행</div>
+              <div class="number">650301-04-077680</div>
+              <div class="name">어머니 강혜숙</div>
+            </div>
+            <button class="copy-btn" onclick="copyAccount('65030104077680')">복사</button>
           </div>
         </div>
       </div>
@@ -1398,23 +1299,6 @@ section {
     </div>
   </section>
 
-  <!-- RSVP -->
-  <section class="rsvp-section">
-    <div class="fade-in">
-      <div class="section-title">RSVP</div>
-      <div class="section-title-kr">참석 여부</div>
-      <div class="divider"></div>
-      <p class="rsvp-desc">
-        축하의 마음으로 참석해 주시면<br>
-        더없는 기쁨이 되겠습니다.
-      </p>
-      <div class="rsvp-buttons">
-        <button class="rsvp-btn attend" onclick="rsvp('attend')">참석하겠습니다</button>
-        <button class="rsvp-btn decline" onclick="rsvp('decline')">참석이 어렵습니다</button>
-      </div>
-      <div class="rsvp-message" id="rsvpMessage"></div>
-    </div>
-  </section>
 
   <!-- SHARE -->
   <section class="share-section">
@@ -1470,84 +1354,15 @@ section {
   </button>
 </nav>
 
-<!-- IMAGE VIEWER -->
-<div class="viewer-overlay" id="viewer">
-  <button class="viewer-close" onclick="closeViewer()">&#10005;</button>
-  <button class="viewer-nav prev" onclick="navViewer(-1)">&#10094;</button>
-  <button class="viewer-nav next" onclick="navViewer(1)">&#10095;</button>
-  <img id="viewerImg" src="" alt="">
-  <div class="viewer-counter" id="viewerCounter"></div>
-</div>
-
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// Gallery viewer - all 17 photos
-const allImages = [
-  'images/ONG_1126 -기본-.jpg',
-  'images/ONG_0340-.jpg',
-  'images/ONG_0485-.jpg',
-  'images/ONG_0541-.jpg',
-  'images/ONG_0892-.jpg',
-  'images/ONG_0922-.jpg',
-  'images/ONG_0953-.jpg',
-  'images/ONG_1006-.jpg',
-  'images/ONG_1034-.jpg',
-  'images/ONG_1126 -기본-.jpg',
-  'images/ONG_1458-.jpg',
-  'images/ONG_1542-.jpg',
-  'images/ONG_2143-.jpg',
-  'images/ONG_2265-.jpg',
-  'images/ONG_2401-.jpg',
-  'images/ONG_2442-.jpg',
-  'images/ONG_2461-.jpg'
-];
-let currentImg = 0;
-
-function openViewerAll(idx) {
-  currentImg = idx;
-  const img = document.getElementById('viewerImg');
-  img.src = allImages[idx];
-  document.getElementById('viewerCounter').textContent = (idx + 1) + ' / ' + allImages.length;
-  document.getElementById('viewer').classList.add('active');
-  document.body.style.overflow = 'hidden';
+// Gallery more button
+function showMorePhotos() {
+  document.getElementById('gallery').classList.add('show-all');
+  document.getElementById('galleryMoreBtn').classList.add('hidden');
 }
-
-function closeViewer() {
-  document.getElementById('viewer').classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-function navViewer(dir) {
-  currentImg = (currentImg + dir + allImages.length) % allImages.length;
-  document.getElementById('viewerImg').src = allImages[currentImg];
-  document.getElementById('viewerCounter').textContent = (currentImg + 1) + ' / ' + allImages.length;
-}
-
-// Close viewer on background click
-document.getElementById('viewer').addEventListener('click', function(e) {
-  if (e.target === this) closeViewer();
-});
-
-// Keyboard navigation
-document.addEventListener('keydown', function(e) {
-  if (!document.getElementById('viewer').classList.contains('active')) return;
-  if (e.key === 'ArrowLeft') navViewer(-1);
-  else if (e.key === 'ArrowRight') navViewer(1);
-  else if (e.key === 'Escape') closeViewer();
-});
-
-// Swipe support for viewer
-(function() {
-  const viewer = document.getElementById('viewer');
-  let startX = 0;
-  viewer.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
-  viewer.addEventListener('touchend', e => {
-    const diff = e.changedTouches[0].clientX - startX;
-    if (Math.abs(diff) > 50) navViewer(diff > 0 ? -1 : 1);
-  });
-})();
 
 // D-day counter
 function updateDday() {
