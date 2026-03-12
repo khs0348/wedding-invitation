@@ -1313,10 +1313,10 @@ section {
         <p>경기도 부천시 소사구 경인로 386</p>
       </div>
       <div class="map-buttons">
-        <a class="map-btn" href="https://map.naver.com/v5/search/MJ웨딩홀" target="_blank">
+        <a class="map-btn" href="#" onclick="openNaverMap();return false;">
           <img src="icons/navermap_icon.png" alt="naver" style="width:20px;height:20px;border-radius:4px"> 네이버지도
         </a>
-        <a class="map-btn" href="https://map.kakao.com/?q=MJ웨딩홀" target="_blank">
+        <a class="map-btn" href="#" onclick="openKakaoMap();return false;">
           <img src="icons/kakao_icon.png" alt="kakao" style="width:20px;height:20px;border-radius:4px"> 카카오맵
         </a>
         <a class="map-btn" href="#" onclick="openTmap();return false;">
@@ -1765,6 +1765,42 @@ function escapeHtml(text) {
 }
 
 renderGuestbook();
+
+// 네이버지도 앱 연동
+function openNaverMap() {
+  var appUrl = 'nmap://place?lat=37.4818021&lng=126.7984948&name=MJ웨딩홀&appname=wedding-invitation';
+  var webUrl = 'https://map.naver.com/v5/search/MJ웨딩홀';
+  var timeout = setTimeout(function() {
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.indexOf('android') > -1) {
+      window.location.href = 'https://play.google.com/store/apps/details?id=com.nhn.android.nmap';
+    } else if (ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1) {
+      window.location.href = 'https://apps.apple.com/kr/app/naver-map/id311867728';
+    } else {
+      window.open(webUrl, '_blank');
+    }
+  }, 1500);
+  window.location.href = appUrl;
+  window.addEventListener('pagehide', function() { clearTimeout(timeout); }, { once: true });
+}
+
+// 카카오맵 앱 연동
+function openKakaoMap() {
+  var appUrl = 'kakaomap://look?p=37.4818021,126.7984948';
+  var webUrl = 'https://map.kakao.com/?q=MJ웨딩홀';
+  var timeout = setTimeout(function() {
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.indexOf('android') > -1) {
+      window.location.href = 'https://play.google.com/store/apps/details?id=net.daum.android.map';
+    } else if (ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1) {
+      window.location.href = 'https://apps.apple.com/kr/app/kakaomap/id304608425';
+    } else {
+      window.open(webUrl, '_blank');
+    }
+  }, 1500);
+  window.location.href = appUrl;
+  window.addEventListener('pagehide', function() { clearTimeout(timeout); }, { once: true });
+}
 
 // T맵 앱 연동
 function openTmap() {
