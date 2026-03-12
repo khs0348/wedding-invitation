@@ -111,6 +111,7 @@ body {
   z-index: 1;
   font-family: 'Dancing Script', cursive;
   font-size: 60px;
+  font-weight: bold;
   color: #fff;
   text-align: center;
   text-shadow: 0 3px 12px rgba(0,0,0,0.7), 0 0 30px rgba(0,0,0,0.5), 0 0 60px rgba(0,0,0,0.3);
@@ -857,11 +858,36 @@ section {
   text-align: left;
 }
 
+.guestbook-msg .msg-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 .guestbook-msg .msg-name {
   font-size: 13px;
   font-weight: 500;
   color: #5a4e3e;
-  margin-bottom: 4px;
+}
+
+.guestbook-msg .msg-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.msg-action-btn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: #bbb;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 2px 4px;
+}
+
+.msg-action-btn:active {
+  color: #888;
 }
 
 .guestbook-msg .msg-text {
@@ -1149,9 +1175,7 @@ section {
       <div class="section-title-kr">예식 일시</div>
       <div class="divider"></div>
       <div class="calendar-info">
-        2026년 5월
         <div class="big-date">05</div>
-        일요일 오후 12:00
       </div>
       <div class="calendar">
         <table>
@@ -1416,7 +1440,7 @@ section {
   </section>
 
   <!-- NOTICE -->
-  <section class="greeting" style="padding: 50px 30px; background: #faf8f5;">
+  <section class="greeting" style="padding: 0px 30px 30px 30px; background: #faf8f5;">
     <div class="fade-in" style="text-align:center;">
       <p class="greeting-text" style="font-size:14px; color:#999; line-height:2;">
         화환은 정중히 사양합니다.<br>
@@ -1434,6 +1458,7 @@ section {
       <div class="divider"></div>
       <div class="guestbook-form">
         <input type="text" class="guestbook-input" id="gbName" placeholder="이름">
+        <input type="password" class="guestbook-input" id="gbPw" placeholder="비밀번호 (수정/삭제 시 필요)">
         <textarea class="guestbook-textarea" id="gbMsg" placeholder="축하 메시지를 남겨주세요"></textarea>
         <button class="guestbook-submit" onclick="submitGuestbook()">메시지 남기기</button>
       </div>
@@ -1672,22 +1697,68 @@ function rsvp(type) {
   showToast(type === 'attend' ? '참석이 확인되었습니다' : '회신이 전달되었습니다');
 }
 
-// Guestbook
+// Guestbook with password
+let guestbookData = JSON.parse(localStorage.getItem('guestbook') || '[]');
+
+function renderGuestbook() {
+  const container = document.getElementById('guestbookMessages');
+  container.innerHTML = '';
+  guestbookData.forEach(function(item, idx) {
+    const div = document.createElement('div');
+    div.className = 'guestbook-msg';
+    div.innerHTML = '<div class="msg-header"><div class="msg-name">' + escapeHtml(item.name) + '</div>' +
+      '<div class="msg-actions">' +
+      '<button class="msg-action-btn" onclick="editGuestbook(' + idx + ')">수정</button>' +
+      '<button class="msg-action-btn" onclick="deleteGuestbook(' + idx + ')">삭제</button>' +
+      '</div></div>' +
+      '<div class="msg-text">' + escapeHtml(item.message) + '</div>';
+    container.appendChild(div);
+  });
+}
+
 function submitGuestbook() {
   const name = document.getElementById('gbName').value.trim();
+  const pw = document.getElementById('gbPw').value.trim();
   const message = document.getElementById('gbMsg').value.trim();
-  if (!name || !message) {
-    showToast('이름과 메시지를 입력해주세요');
+  if (!name || !pw || !message) {
+    showToast('이름, 비밀번호, 메시지를 모두 입력해주세요');
     return;
   }
-  const container = document.getElementById('guestbookMessages');
-  const div = document.createElement('div');
-  div.className = 'guestbook-msg';
-  div.innerHTML = '<div class="msg-name">' + escapeHtml(name) + '</div><div class="msg-text">' + escapeHtml(message) + '</div>';
-  container.prepend(div);
+  guestbookData.unshift({ name: name, pw: pw, message: message });
+  localStorage.setItem('guestbook', JSON.stringify(guestbookData));
+  renderGuestbook();
   document.getElementById('gbName').value = '';
+  document.getElementById('gbPw').value = '';
   document.getElementById('gbMsg').value = '';
   showToast('축하 메시지가 등록되었습니다');
+}
+
+function deleteGuestbook(idx) {
+  const pw = prompt('비밀번호를 입력해주세요');
+  if (pw === null) return;
+  if (pw !== guestbookData[idx].pw) {
+    showToast('비밀번호가 일치하지 않습니다');
+    return;
+  }
+  guestbookData.splice(idx, 1);
+  localStorage.setItem('guestbook', JSON.stringify(guestbookData));
+  renderGuestbook();
+  showToast('메시지가 삭제되었습니다');
+}
+
+function editGuestbook(idx) {
+  const pw = prompt('비밀번호를 입력해주세요');
+  if (pw === null) return;
+  if (pw !== guestbookData[idx].pw) {
+    showToast('비밀번호가 일치하지 않습니다');
+    return;
+  }
+  const newMsg = prompt('수정할 메시지를 입력해주세요', guestbookData[idx].message);
+  if (newMsg === null || newMsg.trim() === '') return;
+  guestbookData[idx].message = newMsg.trim();
+  localStorage.setItem('guestbook', JSON.stringify(guestbookData));
+  renderGuestbook();
+  showToast('메시지가 수정되었습니다');
 }
 
 function escapeHtml(text) {
@@ -1695,6 +1766,8 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+
+renderGuestbook();
 
 // Kakao SDK init
 Kakao.init('35af52640d2bf33e805079f009760548');
