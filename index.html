@@ -47,6 +47,7 @@ body {
 .cover {
   position: relative;
   height: 100vh;
+  height: -webkit-fill-available;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1988,6 +1989,10 @@ function openTmap() {
   window.location.href = appUrl;
   window.addEventListener('pagehide', function() { clearTimeout(timeout); }, { once: true });
 }
+
+// Fix cover height for in-app browsers (KakaoTalk, etc.)
+var coverEl = document.querySelector('.cover');
+coverEl.style.height = window.innerHeight + 'px';
 
 // Kakao SDK init
 Kakao.init('35af52640d2bf33e805079f009760548');
