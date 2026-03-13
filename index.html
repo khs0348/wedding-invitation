@@ -1480,7 +1480,7 @@ section {
   </div>
 
   <audio id="bgMusic" loop preload="auto">
-    <source src="music/StellaJang-L'Amour,LesBaguettes,Paris.mp3" type="audio/mpeg">
+    <source src="music/bgm.mp3" type="audio/mpeg">
   </audio>
   <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" style="display:none;">
     <span id="musicIcon">♪</span>
@@ -2384,6 +2384,24 @@ function openInvitation() {
   }
 }
 
+// Play music on first user interaction
+var musicStarted = false;
+function startMusicOnInteraction() {
+  if (musicStarted) return;
+  musicStarted = true;
+  bgMusic.play().then(function() {
+    isMusicPlaying = true;
+    musicToggle.style.display = 'flex';
+    musicToggle.classList.add('playing');
+  }).catch(function() {});
+  document.removeEventListener('touchstart', startMusicOnInteraction);
+  document.removeEventListener('scroll', startMusicOnInteraction);
+  document.removeEventListener('click', startMusicOnInteraction);
+}
+document.addEventListener('touchstart', startMusicOnInteraction, { once: true });
+document.addEventListener('scroll', startMusicOnInteraction, { once: true });
+document.addEventListener('click', startMusicOnInteraction, { once: true });
+
 function toggleMusic() {
   if (isMusicPlaying) {
     bgMusic.pause();
@@ -2399,15 +2417,6 @@ function toggleMusic() {
     musicIcon.textContent = '♪';
   }
 }
-
-// Try auto-play (works in KakaoTalk in-app browser)
-bgMusic.play().then(function() {
-  isMusicPlaying = true;
-  musicToggle.style.display = 'flex';
-  musicToggle.classList.add('playing');
-}).catch(function() {
-  // Auto-play blocked, user needs to tap "초대장 열기"
-});
 
 // Fix cover height for in-app browsers (KakaoTalk, etc.)
 var coverEl = document.querySelector('.cover');
