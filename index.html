@@ -2400,6 +2400,15 @@ function toggleMusic() {
   }
 }
 
+// Try auto-play (works in KakaoTalk in-app browser)
+bgMusic.play().then(function() {
+  isMusicPlaying = true;
+  musicToggle.style.display = 'flex';
+  musicToggle.classList.add('playing');
+}).catch(function() {
+  // Auto-play blocked, user needs to tap "초대장 열기"
+});
+
 // Fix cover height for in-app browsers (KakaoTalk, etc.)
 var coverEl = document.querySelector('.cover');
 coverEl.style.height = window.innerHeight + 'px';
