@@ -1065,6 +1065,39 @@ section {
   transform: translateX(-50%) translateY(0);
 }
 
+/* ===== GUEST PHOTOS ===== */
+.guest-photo-section {
+  background: #faf8f5;
+  text-align: center;
+}
+
+.guest-upload-form {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.guest-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+  padding: 14px 28px;
+  border: 1px solid #d4c5a9;
+  background: #fff;
+  color: #8a7d6b;
+  font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.guest-upload-btn:active {
+  background: #c9b99a;
+  color: #fff;
+}
+
 /* ===== FLOATING BUTTONS ===== */
 .floating-btns {
   position: fixed;
@@ -1632,6 +1665,22 @@ section {
   </section>
 
 
+  <!-- GUEST PHOTOS -->
+  <section class="guest-photo-section">
+    <div class="fade-in">
+      <div class="section-title">Guest Photo</div>
+      <div class="section-title-kr">하객 사진첩</div>
+      <div class="divider"></div>
+      <p style="font-size:13px; color:#999; margin-bottom:20px; line-height:1.8;">소중한 순간을 사진으로 남겨주세요</p>
+      <div class="guest-upload-form">
+        <input type="text" class="guestbook-input" id="gpName" placeholder="이름">
+        <input type="file" id="guestPhotoInput" accept="image/*" multiple style="display:none;" onchange="uploadGuestPhotos(this.files)">
+        <button class="guest-upload-btn" onclick="triggerPhotoUpload()">&#128247; 사진 올리기</button>
+        <div id="uploadProgress" style="display:none; margin-top:12px; font-size:13px; color:#b8a88a;"></div>
+      </div>
+    </div>
+  </section>
+
   <!-- SHARE -->
   <section class="share-section">
     <div class="fade-in">
@@ -1964,6 +2013,83 @@ function escapeHtml(text) {
 }
 
 renderGuestbook();
+
+// Guest Photos with Cloudinary
+function triggerPhotoUpload() {
+  var name = document.getElementById('gpName').value.trim();
+  if (!name) {
+    showToast('이름을 입력해주세요');
+    return;
+  }
+  document.getElementById('guestPhotoInput').click();
+}
+
+function uploadGuestPhotos(files) {
+  if (!files.length) return;
+  var name = document.getElementById('gpName').value.trim();
+  if (!name) return;
+  var progress = document.getElementById('uploadProgress');
+  var total = files.length;
+  var done = 0;
+  progress.style.display = 'block';
+  progress.textContent = '업로드 중... (0/' + total + ')';
+
+  Array.from(files).forEach(function(file) {
+    compressImage(file, function(blob) {
+      var formData = new FormData();
+      formData.append('file', blob);
+      formData.append('upload_preset', 'xenm8dip');
+      formData.append('folder', 'wedding-guests/' + name);
+
+      fetch('https://api.cloudinary.com/v1_1/dbptioyfs/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(function(res) { return res.json(); })
+      .then(function() {
+        done++;
+        progress.textContent = '업로드 중... (' + done + '/' + total + ')';
+        if (done === total) {
+          progress.textContent = total + '장 업로드 완료! 감사합니다 ♥';
+          document.getElementById('gpName').value = '';
+          setTimeout(function() { progress.style.display = 'none'; }, 3000);
+        }
+      })
+      .catch(function() {
+        done++;
+        if (done === total) {
+          progress.textContent = '일부 사진 업로드에 실패했습니다';
+          setTimeout(function() { progress.style.display = 'none'; }, 2000);
+        }
+      });
+    });
+  });
+}
+
+function compressImage(file, callback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxW = 1200;
+      var w = img.width;
+      var h = img.height;
+      if (w > maxW) {
+        h = Math.round(h * maxW / w);
+        w = maxW;
+      }
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(function(blob) {
+        callback(blob);
+      }, 'image/jpeg', 0.8);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 
 // 네이버지도 앱 연동
 function openNaverMap() {
