@@ -10,6 +10,7 @@
 <meta property="og:url" content="https://khs0348.github.io/wedding-invitation/">
 <meta property="og:type" content="website">
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=35af52640d2bf33e805079f009760548"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Alex+Brush&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -537,23 +538,11 @@ section {
   text-decoration: none;
 }
 
-.map-placeholder {
+.map-container {
   width: 100%;
-  height: 250px;
-  background: #e8e2d8;
+  height: 300px;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #b8a88a;
-  font-size: 14px;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.map-placeholder .map-icon {
-  font-size: 36px;
-  opacity: 0.5;
+  overflow: hidden;
 }
 
 .map-buttons {
@@ -1308,10 +1297,7 @@ section {
           <a href="tel:0323475500">TEL. 032-347-5500</a>
         </div>
       </div>
-      <div class="map-placeholder" id="map">
-        <div class="map-icon">&#128205;</div>
-        <p>경기도 부천시 소사구 경인로 386</p>
-      </div>
+      <div class="map-container" id="map"></div>
       <div class="map-buttons">
         <a class="map-btn" href="#" onclick="openNaverMap();return false;">
           <img src="icons/navermap_icon.png" alt="naver" style="width:20px;height:20px;border-radius:4px"> 네이버지도
@@ -1821,6 +1807,21 @@ function openTmap() {
 
 // Kakao SDK init
 Kakao.init('35af52640d2bf33e805079f009760548');
+
+// Kakao Map init
+var mapContainer = document.getElementById('map');
+var mapOption = {
+  center: new kakao.maps.LatLng(37.4818021, 126.7984948),
+  level: 3
+};
+var map = new kakao.maps.Map(mapContainer, mapOption);
+var markerPosition = new kakao.maps.LatLng(37.4818021, 126.7984948);
+var marker = new kakao.maps.Marker({ position: markerPosition });
+marker.setMap(map);
+var infowindow = new kakao.maps.InfoWindow({
+  content: '<div style="padding:5px;font-size:12px;text-align:center;">MJ컨벤션</div>'
+});
+infowindow.open(map, marker);
 
 // Share - KakaoTalk
 function shareKakao() {
