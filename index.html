@@ -1030,6 +1030,58 @@ section {
 }
 
 
+/* ===== COVER OPEN BUTTON ===== */
+.cover-open-btn {
+  margin-top: 40px;
+  padding: 14px 48px;
+  border: 1px solid rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-family: 'Nanum Myeongjo', serif;
+  font-size: 15px;
+  letter-spacing: 3px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cover-open-btn:active {
+  background: rgba(255,255,255,0.3);
+}
+
+/* ===== MUSIC TOGGLE ===== */
+.music-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.3);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-toggle.playing {
+  animation: musicPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.music-toggle.muted {
+  opacity: 0.4;
+}
+
 /* ===== ANIMATIONS ===== */
 .fade-in {
   opacity: 0;
@@ -1396,8 +1448,16 @@ section {
       </div>
       <div class="date-text">2026.05.03 일요일 오후 12:00</div>
       <div class="venue-text">MJ컨벤션 5층 그랜드볼룸홀</div>
+      <button class="cover-open-btn" onclick="openInvitation()">초대장 열기</button>
     </div>
   </div>
+
+  <audio id="bgMusic" loop preload="auto">
+    <source src="music/StellaJang-L'Amour,LesBaguettes,Paris.mp3" type="audio/mpeg">
+  </audio>
+  <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" style="display:none;">
+    <span id="musicIcon">♪</span>
+  </button>
 
   <!-- GREETING -->
   <section class="greeting">
@@ -2274,6 +2334,43 @@ function openTmap() {
   }, 1500);
   window.location.href = appUrl;
   window.addEventListener('pagehide', function() { clearTimeout(timeout); }, { once: true });
+}
+
+// Music & Cover open
+var bgMusic = document.getElementById('bgMusic');
+var musicToggle = document.getElementById('musicToggle');
+var musicIcon = document.getElementById('musicIcon');
+var isMusicPlaying = false;
+
+function openInvitation() {
+  bgMusic.play().then(function() {
+    isMusicPlaying = true;
+    musicToggle.style.display = 'flex';
+    musicToggle.classList.add('playing');
+  }).catch(function() {
+    musicToggle.style.display = 'flex';
+    musicToggle.classList.add('muted');
+  });
+  var greeting = document.querySelector('.greeting');
+  if (greeting) {
+    greeting.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function toggleMusic() {
+  if (isMusicPlaying) {
+    bgMusic.pause();
+    isMusicPlaying = false;
+    musicToggle.classList.remove('playing');
+    musicToggle.classList.add('muted');
+    musicIcon.textContent = '♪';
+  } else {
+    bgMusic.play();
+    isMusicPlaying = true;
+    musicToggle.classList.add('playing');
+    musicToggle.classList.remove('muted');
+    musicIcon.textContent = '♪';
+  }
 }
 
 // Fix cover height for in-app browsers (KakaoTalk, etc.)
