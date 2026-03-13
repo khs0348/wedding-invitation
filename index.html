@@ -11,6 +11,8 @@
 <meta property="og:type" content="website">
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=35af52640d2bf33e805079f009760548"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Alex+Brush&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -1865,68 +1867,94 @@ function rsvp(type) {
   showToast(type === 'attend' ? '참석이 확인되었습니다' : '회신이 전달되었습니다');
 }
 
-// Guestbook with password
-let guestbookData = JSON.parse(localStorage.getItem('guestbook') || '[]');
+// Firebase init
+firebase.initializeApp({
+  apiKey: "AIzaSyDepsMKsnDlcJqAVjvy3d_GVQFJzK_9z2A",
+  authDomain: "wedding-invitation-f6876.firebaseapp.com",
+  projectId: "wedding-invitation-f6876",
+  storageBucket: "wedding-invitation-f6876.firebasestorage.app",
+  messagingSenderId: "480082625318",
+  appId: "1:480082625318:web:823e4068cbe4e30d03f7e7"
+});
+var db = firebase.firestore();
+var guestbookRef = db.collection('guestbook');
 
+// Guestbook with Firebase
 function renderGuestbook() {
-  const container = document.getElementById('guestbookMessages');
-  container.innerHTML = '';
-  guestbookData.forEach(function(item, idx) {
-    const div = document.createElement('div');
-    div.className = 'guestbook-msg';
-    div.innerHTML = '<div class="msg-header"><div class="msg-name">' + escapeHtml(item.name) + '</div>' +
-      '<div class="msg-actions">' +
-      '<button class="msg-action-btn" onclick="editGuestbook(' + idx + ')">수정</button>' +
-      '<button class="msg-action-btn" onclick="deleteGuestbook(' + idx + ')">삭제</button>' +
-      '</div></div>' +
-      '<div class="msg-text">' + escapeHtml(item.message) + '</div>';
-    container.appendChild(div);
+  var container = document.getElementById('guestbookMessages');
+  container.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;">불러오는 중...</div>';
+  guestbookRef.orderBy('timestamp', 'desc').get().then(function(snapshot) {
+    container.innerHTML = '';
+    snapshot.forEach(function(doc) {
+      var item = doc.data();
+      var div = document.createElement('div');
+      div.className = 'guestbook-msg';
+      div.innerHTML = '<div class="msg-header"><div class="msg-name">' + escapeHtml(item.name) + '</div>' +
+        '<div class="msg-actions">' +
+        '<button class="msg-action-btn" onclick="editGuestbook(\'' + doc.id + '\')">수정</button>' +
+        '<button class="msg-action-btn" onclick="deleteGuestbook(\'' + doc.id + '\')">삭제</button>' +
+        '</div></div>' +
+        '<div class="msg-text">' + escapeHtml(item.message) + '</div>';
+      container.appendChild(div);
+    });
+    if (snapshot.empty) {
+      container.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;font-size:13px;">첫 번째 축하 메시지를 남겨주세요</div>';
+    }
   });
 }
 
 function submitGuestbook() {
-  const name = document.getElementById('gbName').value.trim();
-  const pw = document.getElementById('gbPw').value.trim();
-  const message = document.getElementById('gbMsg').value.trim();
+  var name = document.getElementById('gbName').value.trim();
+  var pw = document.getElementById('gbPw').value.trim();
+  var message = document.getElementById('gbMsg').value.trim();
   if (!name || !pw || !message) {
     showToast('이름, 비밀번호, 메시지를 모두 입력해주세요');
     return;
   }
-  guestbookData.unshift({ name: name, pw: pw, message: message });
-  localStorage.setItem('guestbook', JSON.stringify(guestbookData));
-  renderGuestbook();
-  document.getElementById('gbName').value = '';
-  document.getElementById('gbPw').value = '';
-  document.getElementById('gbMsg').value = '';
-  showToast('축하 메시지가 등록되었습니다');
+  guestbookRef.add({
+    name: name,
+    pw: pw,
+    message: message,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function() {
+    renderGuestbook();
+    document.getElementById('gbName').value = '';
+    document.getElementById('gbPw').value = '';
+    document.getElementById('gbMsg').value = '';
+    showToast('축하 메시지가 등록되었습니다');
+  });
 }
 
-function deleteGuestbook(idx) {
-  const pw = prompt('비밀번호를 입력해주세요');
+function deleteGuestbook(docId) {
+  var pw = prompt('비밀번호를 입력해주세요');
   if (pw === null) return;
-  if (pw !== guestbookData[idx].pw) {
-    showToast('비밀번호가 일치하지 않습니다');
-    return;
-  }
-  guestbookData.splice(idx, 1);
-  localStorage.setItem('guestbook', JSON.stringify(guestbookData));
-  renderGuestbook();
-  showToast('메시지가 삭제되었습니다');
+  guestbookRef.doc(docId).get().then(function(doc) {
+    if (pw !== doc.data().pw) {
+      showToast('비밀번호가 일치하지 않습니다');
+      return;
+    }
+    guestbookRef.doc(docId).delete().then(function() {
+      renderGuestbook();
+      showToast('메시지가 삭제되었습니다');
+    });
+  });
 }
 
-function editGuestbook(idx) {
-  const pw = prompt('비밀번호를 입력해주세요');
+function editGuestbook(docId) {
+  var pw = prompt('비밀번호를 입력해주세요');
   if (pw === null) return;
-  if (pw !== guestbookData[idx].pw) {
-    showToast('비밀번호가 일치하지 않습니다');
-    return;
-  }
-  const newMsg = prompt('수정할 메시지를 입력해주세요', guestbookData[idx].message);
-  if (newMsg === null || newMsg.trim() === '') return;
-  guestbookData[idx].message = newMsg.trim();
-  localStorage.setItem('guestbook', JSON.stringify(guestbookData));
-  renderGuestbook();
-  showToast('메시지가 수정되었습니다');
+  guestbookRef.doc(docId).get().then(function(doc) {
+    if (pw !== doc.data().pw) {
+      showToast('비밀번호가 일치하지 않습니다');
+      return;
+    }
+    var newMsg = prompt('수정할 메시지를 입력해주세요', doc.data().message);
+    if (newMsg === null || newMsg.trim() === '') return;
+    guestbookRef.doc(docId).update({ message: newMsg.trim() }).then(function() {
+      renderGuestbook();
+      showToast('메시지가 수정되었습니다');
+    });
+  });
 }
 
 function escapeHtml(text) {
