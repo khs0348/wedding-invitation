@@ -1098,6 +1098,79 @@ section {
   color: #fff;
 }
 
+.guest-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.guest-preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.guest-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.guest-preview-item .remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guest-action-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.guest-action-btns button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.guest-action-btns .upload-confirm-btn {
+  background: #c9b99a;
+  color: #fff;
+}
+
+.guest-action-btns .upload-confirm-btn:active {
+  background: #b8a88a;
+}
+
+.guest-action-btns .upload-cancel-btn {
+  background: #e8e2d8;
+  color: #888;
+}
+
+.guest-action-btns .upload-cancel-btn:active {
+  background: #ddd5c8;
+}
+
 /* ===== FLOATING BUTTONS ===== */
 .floating-btns {
   position: fixed;
@@ -1674,8 +1747,13 @@ section {
       <p style="font-size:13px; color:#999; margin-bottom:20px; line-height:1.8;">소중한 순간을 사진으로 남겨주세요</p>
       <div class="guest-upload-form">
         <input type="text" class="guestbook-input" id="gpName" placeholder="이름">
-        <input type="file" id="guestPhotoInput" accept="image/*" multiple style="display:none;" onchange="uploadGuestPhotos(this.files)">
-        <button class="guest-upload-btn" onclick="triggerPhotoUpload()">&#128247; 사진 올리기</button>
+        <input type="file" id="guestPhotoInput" accept="image/*" multiple style="display:none;" onchange="previewGuestPhotos(this.files)">
+        <button class="guest-upload-btn" id="gpSelectBtn" onclick="triggerPhotoUpload()">&#128247; 사진 선택</button>
+        <div class="guest-preview" id="guestPreview"></div>
+        <div class="guest-action-btns" id="gpActionBtns" style="display:none;">
+          <button class="upload-cancel-btn" onclick="cancelGuestPhotos()">취소</button>
+          <button class="upload-confirm-btn" onclick="confirmUploadPhotos()">업로드</button>
+        </div>
         <div id="uploadProgress" style="display:none; margin-top:12px; font-size:13px; color:#b8a88a;"></div>
       </div>
     </div>
@@ -2015,6 +2093,8 @@ function escapeHtml(text) {
 renderGuestbook();
 
 // Guest Photos with Cloudinary
+var selectedPhotos = [];
+
 function triggerPhotoUpload() {
   var name = document.getElementById('gpName').value.trim();
   if (!name) {
@@ -2024,17 +2104,66 @@ function triggerPhotoUpload() {
   document.getElementById('guestPhotoInput').click();
 }
 
-function uploadGuestPhotos(files) {
+function previewGuestPhotos(files) {
   if (!files.length) return;
+  Array.from(files).forEach(function(file) {
+    selectedPhotos.push(file);
+  });
+  renderPreview();
+}
+
+function renderPreview() {
+  var container = document.getElementById('guestPreview');
+  var actionBtns = document.getElementById('gpActionBtns');
+  var selectBtn = document.getElementById('gpSelectBtn');
+  container.innerHTML = '';
+  if (selectedPhotos.length === 0) {
+    actionBtns.style.display = 'none';
+    selectBtn.textContent = '📷 사진 선택';
+    return;
+  }
+  actionBtns.style.display = 'flex';
+  selectBtn.textContent = '📷 사진 추가';
+  selectedPhotos.forEach(function(file, idx) {
+    var div = document.createElement('div');
+    div.className = 'guest-preview-item';
+    var img = document.createElement('img');
+    img.src = URL.createObjectURL(file);
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.innerHTML = '✕';
+    removeBtn.onclick = function() {
+      selectedPhotos.splice(idx, 1);
+      renderPreview();
+    };
+    div.appendChild(img);
+    div.appendChild(removeBtn);
+    container.appendChild(div);
+  });
+}
+
+function cancelGuestPhotos() {
+  selectedPhotos = [];
+  document.getElementById('guestPhotoInput').value = '';
+  renderPreview();
+}
+
+function confirmUploadPhotos() {
   var name = document.getElementById('gpName').value.trim();
-  if (!name) return;
+  if (!name) {
+    showToast('이름을 입력해주세요');
+    return;
+  }
+  if (selectedPhotos.length === 0) return;
   var progress = document.getElementById('uploadProgress');
-  var total = files.length;
+  var actionBtns = document.getElementById('gpActionBtns');
+  var total = selectedPhotos.length;
   var done = 0;
+  actionBtns.style.display = 'none';
   progress.style.display = 'block';
   progress.textContent = '업로드 중... (0/' + total + ')';
 
-  Array.from(files).forEach(function(file) {
+  selectedPhotos.forEach(function(file) {
     compressImage(file, function(blob) {
       var formData = new FormData();
       formData.append('file', blob);
@@ -2052,6 +2181,9 @@ function uploadGuestPhotos(files) {
         if (done === total) {
           progress.textContent = total + '장 업로드 완료! 감사합니다 ♥';
           document.getElementById('gpName').value = '';
+          selectedPhotos = [];
+          document.getElementById('guestPhotoInput').value = '';
+          renderPreview();
           setTimeout(function() { progress.style.display = 'none'; }, 3000);
         }
       })
