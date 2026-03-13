@@ -419,6 +419,16 @@ section {
   height: 100%;
   object-fit: cover;
   display: block;
+  background: #e8e2d8;
+  transition: opacity 0.3s;
+}
+
+.gallery-item img[loading="lazy"] {
+  opacity: 0;
+}
+
+.gallery-item img.loaded {
+  opacity: 1;
 }
 
 /* ===== IMAGE VIEWER ===== */
@@ -541,8 +551,9 @@ section {
 .map-container {
   width: 100%;
   height: 300px;
-  border-radius: 8px;
+  border-radius: 5px;
   overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .map-buttons {
@@ -1092,6 +1103,164 @@ section {
 .invitation {
   padding-bottom: 60px;
 }
+/* Small screens (320px~) */
+@media screen and (max-width: 359px) {
+  /* Cover */
+  .cover .script-title {
+    top: 70px;
+    font-size: 42px;
+  }
+  .cover-content {
+    padding: 0 20px 80px;
+  }
+  .cover-names .name {
+    font-size: 24px;
+    letter-spacing: 4px;
+  }
+  .cover-names .separator {
+    font-size: 22px;
+  }
+  .cover-names {
+    gap: 16px;
+  }
+  .cover .date-text,
+  .cover .venue-text {
+    font-size: 15px;
+  }
+
+  /* Sections */
+  section {
+    padding: 60px 20px;
+  }
+  .section-title-kr {
+    font-size: 19px;
+  }
+
+  /* Greeting */
+  .greeting-text {
+    font-size: 13px;
+    padding: 24px 18px;
+    line-height: 2;
+  }
+  .greeting-parents {
+    font-size: 12px;
+  }
+
+  /* Calendar */
+  .calendar-info .big-date {
+    font-size: 38px;
+  }
+  .calendar {
+    max-width: 280px;
+  }
+  .calendar td {
+    font-size: 13px;
+  }
+  .dday-counter {
+    gap: 10px;
+  }
+  .dday-unit {
+    min-width: 50px;
+  }
+  .dday-unit .number {
+    font-size: 24px;
+  }
+
+  /* Gallery */
+  .gallery {
+    padding: 0 12px;
+    gap: 2px;
+  }
+
+  /* Location */
+  .map-container {
+    height: 250px;
+  }
+  .map-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  .transport-detail h4 {
+    font-size: 12px;
+  }
+  .transport-detail p {
+    font-size: 11px;
+  }
+
+  /* Reception */
+  .reception-card {
+    padding: 24px 18px;
+  }
+
+  /* Account */
+  .account-card {
+    padding: 14px 16px;
+  }
+  .account-card .number {
+    font-size: 13px;
+  }
+  .copy-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  /* Guestbook */
+  .guestbook-input,
+  .guestbook-textarea {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+
+  /* Share */
+  .share-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  /* Bottom nav */
+  .nav-item {
+    font-size: 9px;
+    padding: 4px 4px;
+  }
+  .nav-item .nav-icon {
+    font-size: 16px;
+  }
+
+  /* Toast */
+  .toast {
+    font-size: 12px;
+    padding: 10px 20px;
+  }
+}
+
+/* Landscape mode */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .cover {
+    height: 100vw;
+    min-height: 500px;
+  }
+  .cover-photo img {
+    object-position: center center;
+  }
+  .cover .script-title {
+    top: 40px;
+    font-size: 48px;
+  }
+  .cover-content {
+    padding: 0 30px 50px;
+  }
+  .cover-names .name {
+    font-size: 24px;
+  }
+  .cover-names .separator {
+    font-size: 22px;
+  }
+  .cover .date-text,
+  .cover .venue-text {
+    font-size: 15px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1101,7 +1270,7 @@ section {
   <!-- COVER -->
   <div class="cover">
     <div class="cover-photo">
-      <img src="images/ONG_1126 -기본-.jpg" alt="준희 & 송민">
+      <img src="images/ONG_1126 -기본-.jpg" alt="준희 & 송민" loading="eager" fetchpriority="high">
     </div>
     <div class="script-title">Our Wedding Day</div>
     <div class="cover-content">
@@ -1259,23 +1428,23 @@ section {
       <div class="section-title-kr">우리의 순간</div>
       <div class="divider"></div>
       <div class="gallery" id="gallery">
-        <div class="gallery-item" onclick="openViewer(0)"><img src="images/ONG_0252.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(1)"><img src="images/ONG_0340-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(2)"><img src="images/ONG_0485-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(3)"><img src="images/ONG_0541-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(4)"><img src="images/ONG_0892-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(5)"><img src="images/ONG_0922-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(6)"><img src="images/ONG_0953-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(7)"><img src="images/ONG_1006-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(8)"><img src="images/ONG_1034-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(9)"><img src="images/ONG_1126 -기본-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(10)"><img src="images/ONG_1458-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(11)"><img src="images/ONG_1542-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(12)"><img src="images/ONG_2143-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(13)"><img src="images/ONG_2265-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(14)"><img src="images/ONG_2401-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(15)"><img src="images/ONG_2442-.jpg" alt=""></div>
-        <div class="gallery-item" onclick="openViewer(16)"><img src="images/ONG_2461-.jpg" alt=""></div>
+        <div class="gallery-item" onclick="openViewer(0)"><img src="images/ONG_0252.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(1)"><img src="images/ONG_0340-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(2)"><img src="images/ONG_0485-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(3)"><img src="images/ONG_0541-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(4)"><img src="images/ONG_0892-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(5)"><img src="images/ONG_0922-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(6)"><img src="images/ONG_0953-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(7)"><img src="images/ONG_1006-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(8)"><img src="images/ONG_1034-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(9)"><img src="images/ONG_1126 -기본-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(10)"><img src="images/ONG_1458-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(11)"><img src="images/ONG_1542-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(12)"><img src="images/ONG_2143-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(13)"><img src="images/ONG_2265-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(14)"><img src="images/ONG_2401-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(15)"><img src="images/ONG_2442-.jpg" alt="" loading="lazy"></div>
+        <div class="gallery-item" onclick="openViewer(16)"><img src="images/ONG_2461-.jpg" alt="" loading="lazy"></div>
       </div>
       <button class="gallery-more-btn" id="galleryMoreBtn" onclick="showMorePhotos()">더보기</button>
     </div>
@@ -1625,6 +1794,17 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 
 document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// Lazy image fade-in
+document.querySelectorAll('.gallery-item img').forEach(function(img) {
+  if (img.complete) {
+    img.classList.add('loaded');
+  } else {
+    img.addEventListener('load', function() {
+      img.classList.add('loaded');
+    });
+  }
+});
 
 // Smooth scroll for nav
 document.querySelectorAll('.bottom-nav a[href^="#"]').forEach(link => {
