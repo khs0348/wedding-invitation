@@ -15,7 +15,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Alex+Brush&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Dancing+Script:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 * {
   margin: 0;
@@ -1092,6 +1092,7 @@ section {
   padding: 14px 48px;
   border: 1px solid rgba(255,255,255,0.7);
   background: rgba(255,255,255,0.15);
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   color: #fff;
   font-family: 'Nanum Myeongjo', serif;
@@ -2116,14 +2117,16 @@ function rsvp(type) {
 }
 
 // Firebase init
-firebase.initializeApp({
-  apiKey: "AIzaSyDepsMKsnDlcJqAVjvy3d_GVQFJzK_9z2A",
-  authDomain: "wedding-invitation-f6876.firebaseapp.com",
-  projectId: "wedding-invitation-f6876",
-  storageBucket: "wedding-invitation-f6876.firebasestorage.app",
-  messagingSenderId: "480082625318",
-  appId: "1:480082625318:web:823e4068cbe4e30d03f7e7"
-});
+try {
+  firebase.initializeApp({
+    apiKey: "AIzaSyDepsMKsnDlcJqAVjvy3d_GVQFJzK_9z2A",
+    authDomain: "wedding-invitation-f6876.firebaseapp.com",
+    projectId: "wedding-invitation-f6876",
+    storageBucket: "wedding-invitation-f6876.firebasestorage.app",
+    messagingSenderId: "480082625318",
+    appId: "1:480082625318:web:823e4068cbe4e30d03f7e7"
+  });
+} catch(e) {}
 var db = firebase.firestore();
 var guestbookRef = db.collection('guestbook');
 
@@ -2398,7 +2401,7 @@ function compressImage(file, callback) {
 
 // 네이버지도 앱 연동
 function openNaverMap() {
-  var appUrl = 'nmap://place?lat=37.4818021&lng=126.7984948&name=MJ웨딩홀&appname=wedding-invitation';
+  var appUrl = 'nmap://place?lat=37.4818021&lng=126.7984948&name=' + encodeURIComponent('MJ웨딩홀') + '&appname=wedding-invitation';
   var webUrl = 'https://map.naver.com/v5/search/MJ웨딩홀';
   var timeout = setTimeout(function() {
     var ua = navigator.userAgent.toLowerCase();
@@ -2434,7 +2437,7 @@ function openKakaoMap() {
 
 // T맵 앱 연동
 function openTmap() {
-  var appUrl = 'tmap://route?goalx=126.7984948&goaly=37.4818021&goalname=MJ웨딩홀';
+  var appUrl = 'tmap://route?goalx=126.7984948&goaly=37.4818021&goalname=' + encodeURIComponent('MJ웨딩홀');
   var timeout = setTimeout(function() {
     var ua = navigator.userAgent.toLowerCase();
     if (ua.indexOf('android') > -1) {
@@ -2481,11 +2484,9 @@ function startMusicOnInteraction() {
     musicToggle.classList.add('playing');
   }).catch(function() {});
   document.removeEventListener('touchstart', startMusicOnInteraction);
-  document.removeEventListener('scroll', startMusicOnInteraction);
   document.removeEventListener('click', startMusicOnInteraction);
 }
 document.addEventListener('touchstart', startMusicOnInteraction, { once: true });
-document.addEventListener('scroll', startMusicOnInteraction, { once: true });
 document.addEventListener('click', startMusicOnInteraction, { once: true });
 
 function toggleMusic() {
@@ -2518,22 +2519,26 @@ var coverEl = document.querySelector('.cover');
 coverEl.style.height = window.innerHeight + 'px';
 
 // Kakao SDK init
-Kakao.init('35af52640d2bf33e805079f009760548');
+try {
+  Kakao.init('35af52640d2bf33e805079f009760548');
+} catch(e) {}
 
 // Kakao Map init
-var mapContainer = document.getElementById('map');
-var mapOption = {
-  center: new kakao.maps.LatLng(37.4818021, 126.7984948),
-  level: 3
-};
-var map = new kakao.maps.Map(mapContainer, mapOption);
-var markerPosition = new kakao.maps.LatLng(37.4818021, 126.7984948);
-var marker = new kakao.maps.Marker({ position: markerPosition });
-marker.setMap(map);
-var infowindow = new kakao.maps.InfoWindow({
-  content: '<div style="padding:5px;font-size:12px;text-align:center;">MJ컨벤션</div>'
-});
-infowindow.open(map, marker);
+try {
+  var mapContainer = document.getElementById('map');
+  var mapOption = {
+    center: new kakao.maps.LatLng(37.4818021, 126.7984948),
+    level: 3
+  };
+  var map = new kakao.maps.Map(mapContainer, mapOption);
+  var markerPosition = new kakao.maps.LatLng(37.4818021, 126.7984948);
+  var marker = new kakao.maps.Marker({ position: markerPosition });
+  marker.setMap(map);
+  var infowindow = new kakao.maps.InfoWindow({
+    content: '<div style="padding:5px;font-size:12px;text-align:center;">MJ컨벤션</div>'
+  });
+  infowindow.open(map, marker);
+} catch(e) {}
 
 // Share - KakaoTalk
 function shareKakao() {
