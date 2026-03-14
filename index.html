@@ -881,8 +881,37 @@ section {
 
 .guestbook-messages {
   margin-top: 20px;
-  max-height: 300px;
-  overflow-y: auto;
+}
+
+.guestbook-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.guestbook-pagination button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #d4c5a9;
+  background: transparent;
+  color: #b8a88a;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.guestbook-pagination button.active {
+  background: #c9b99a;
+  color: #fff;
+  border-color: #c9b99a;
+}
+
+.guestbook-pagination button:active {
+  background: #c9b99a;
+  color: #fff;
 }
 
 .guestbook-msg {
@@ -1823,6 +1852,7 @@ section {
         <button class="guestbook-submit" onclick="submitGuestbook()">메시지 남기기</button>
       </div>
       <div class="guestbook-messages" id="guestbookMessages"></div>
+      <div class="guestbook-pagination" id="gbPagination"></div>
     </div>
   </section>
 
@@ -2096,27 +2126,79 @@ var db = firebase.firestore();
 var guestbookRef = db.collection('guestbook');
 
 // Guestbook with Firebase
+var gbPerPage = 5;
+var gbCurrentPage = 1;
+var gbAllDocs = [];
+
 function renderGuestbook() {
   var container = document.getElementById('guestbookMessages');
   container.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;">불러오는 중...</div>';
   guestbookRef.orderBy('timestamp', 'desc').get().then(function(snapshot) {
-    container.innerHTML = '';
+    gbAllDocs = [];
     snapshot.forEach(function(doc) {
-      var item = doc.data();
-      var div = document.createElement('div');
-      div.className = 'guestbook-msg';
-      div.innerHTML = '<div class="msg-header"><div class="msg-name">' + escapeHtml(item.name) + '</div>' +
-        '<div class="msg-actions">' +
-        '<button class="msg-action-btn" onclick="editGuestbook(\'' + doc.id + '\')">수정</button>' +
-        '<button class="msg-action-btn" onclick="deleteGuestbook(\'' + doc.id + '\')">삭제</button>' +
-        '</div></div>' +
-        '<div class="msg-text">' + escapeHtml(item.message) + '</div>';
-      container.appendChild(div);
+      gbAllDocs.push(doc);
     });
-    if (snapshot.empty) {
-      container.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;font-size:13px;">첫 번째 축하 메시지를 남겨주세요</div>';
-    }
+    gbCurrentPage = 1;
+    displayMessages();
   });
+}
+
+function displayMessages() {
+  var container = document.getElementById('guestbookMessages');
+  var pagination = document.getElementById('gbPagination');
+  container.innerHTML = '';
+  pagination.innerHTML = '';
+  if (gbAllDocs.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;font-size:13px;">첫 번째 축하 메시지를 남겨주세요</div>';
+    return;
+  }
+  var totalPages = Math.ceil(gbAllDocs.length / gbPerPage);
+  var start = (gbCurrentPage - 1) * gbPerPage;
+  var end = Math.min(start + gbPerPage, gbAllDocs.length);
+  for (var i = start; i < end; i++) {
+    var doc = gbAllDocs[i];
+    var item = doc.data();
+    var div = document.createElement('div');
+    div.className = 'guestbook-msg';
+    div.innerHTML = '<div class="msg-header"><div class="msg-name">' + escapeHtml(item.name) + '</div>' +
+      '<div class="msg-actions">' +
+      '<button class="msg-action-btn" onclick="editGuestbook(\'' + doc.id + '\')">수정</button>' +
+      '<button class="msg-action-btn" onclick="deleteGuestbook(\'' + doc.id + '\')">삭제</button>' +
+      '</div></div>' +
+      '<div class="msg-text">' + escapeHtml(item.message) + '</div>';
+    container.appendChild(div);
+  }
+  if (totalPages > 1) {
+    // Prev arrow
+    var prevBtn = document.createElement('button');
+    prevBtn.textContent = '‹';
+    prevBtn.style.fontSize = '18px';
+    if (gbCurrentPage === 1) { prevBtn.disabled = true; prevBtn.style.opacity = '0.3'; }
+    prevBtn.onclick = function() { if (gbCurrentPage > 1) { gbCurrentPage--; displayMessages(); } };
+    pagination.appendChild(prevBtn);
+
+    // Page numbers (max 5 visible)
+    var startPage = Math.max(1, gbCurrentPage - 2);
+    var endPage = Math.min(totalPages, startPage + 4);
+    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+    for (var p = startPage; p <= endPage; p++) {
+      var btn = document.createElement('button');
+      btn.textContent = p;
+      if (p === gbCurrentPage) btn.className = 'active';
+      btn.onclick = (function(page) {
+        return function() { gbCurrentPage = page; displayMessages(); };
+      })(p);
+      pagination.appendChild(btn);
+    }
+
+    // Next arrow
+    var nextBtn = document.createElement('button');
+    nextBtn.textContent = '›';
+    nextBtn.style.fontSize = '18px';
+    if (gbCurrentPage === totalPages) { nextBtn.disabled = true; nextBtn.style.opacity = '0.3'; }
+    nextBtn.onclick = function() { if (gbCurrentPage < totalPages) { gbCurrentPage++; displayMessages(); } };
+    pagination.appendChild(nextBtn);
+  }
 }
 
 function submitGuestbook() {
