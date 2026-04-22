@@ -1862,7 +1862,7 @@ section {
 
 
   <!-- GUEST PHOTOS -->
-  <section class="guest-photo-section">
+  <section class="guest-photo-section" id="guest-snap">
     <div class="fade-in">
       <div class="section-title">Guest Photo</div>
       <div class="section-title-kr">게스트 스냅</div>
@@ -2459,7 +2459,7 @@ var musicToggle = document.getElementById('musicToggle');
 var musicIcon = document.getElementById('musicIcon');
 var isMusicPlaying = false;
 
-function openInvitation() {
+function openInvitation(scrollTarget) {
   bgMusic.play().then(function() {
     isMusicPlaying = true;
     musicToggle.style.display = 'flex';
@@ -2468,9 +2468,17 @@ function openInvitation() {
     musicToggle.style.display = 'flex';
     musicToggle.classList.add('muted');
   });
-  var greeting = document.querySelector('.greeting');
-  if (greeting) {
-    greeting.scrollIntoView({ behavior: 'smooth' });
+  var target = scrollTarget || document.querySelector('.greeting');
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// QR 코드 해시 링크: #guest-snap 등으로 접근 시 커버 자동 열고 해당 섹션으로 이동
+if (window.location.hash) {
+  var hashTarget = document.querySelector(window.location.hash);
+  if (hashTarget) {
+    openInvitation(hashTarget);
   }
 }
 
