@@ -2136,7 +2136,7 @@ var gbPerPage = 5;
 var gbCurrentPage = 1;
 var gbAllDocs = [];
 
-function renderGuestbook() {
+function renderGuestbook(callback) {
   var container = document.getElementById('guestbookMessages');
   container.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;">불러오는 중...</div>';
   guestbookRef.orderBy('timestamp', 'desc').get().then(function(snapshot) {
@@ -2146,6 +2146,7 @@ function renderGuestbook() {
     });
     gbCurrentPage = 1;
     displayMessages();
+    if (callback) callback();
   });
 }
 
@@ -2267,7 +2268,15 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-renderGuestbook();
+renderGuestbook(function() {
+  // 방명록 로딩 완료 후 해시 스크롤 실행
+  if (window.location.hash) {
+    var hashTarget = document.querySelector(window.location.hash);
+    if (hashTarget) {
+      openInvitation(hashTarget);
+    }
+  }
+});
 
 // Guest Photos with Cloudinary
 var selectedPhotos = [];
@@ -2471,14 +2480,6 @@ function openInvitation(scrollTarget) {
   var target = scrollTarget || document.querySelector('.greeting');
   if (target) {
     target.scrollIntoView({ behavior: 'smooth' });
-  }
-}
-
-// QR 코드 해시 링크: #guest-snap 등으로 접근 시 커버 자동 열고 해당 섹션으로 이동
-if (window.location.hash) {
-  var hashTarget = document.querySelector(window.location.hash);
-  if (hashTarget) {
-    openInvitation(hashTarget);
   }
 }
 
